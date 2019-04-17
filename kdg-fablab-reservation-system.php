@@ -39,13 +39,13 @@
   /**
    * Actions to perform on plugin activation
    */
-  function plugin_activation() {
+  function kdg_fablab_rs_plugin_activation() {
     // code to be executed when plugin is activated
   }
 
   /**
    * Actions to perform on plugin deactivation
    */
-  function plugin_deactivation() {
+  function kdg_fablab_rs_plugin_deactivation() {
     // code to be executed when plugin is deactivated
   }
