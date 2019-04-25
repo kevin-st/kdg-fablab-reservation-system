@@ -1,5 +1,5 @@
 <?php
-  class KdGFablab_IS_Admin {
+  class KdGFablab_RS_Admin {
     private static $initiated = false;
 
     public static function init() {
@@ -11,3 +11,4 @@
     private static function init_hooks() {
       self::$initiated = true;
     }
+  }
