@@ -1,6 +1,6 @@
 <?php
   class KdGFablab_RS_Admin {
-    private static $initiated = false;
+    private static $initiated = FALSE;
 
     public static function init() {
       if (!self::$initiated) {
@@ -9,6 +9,148 @@
     }
 
     private static function init_hooks() {
-      self::$initiated = true;
+      self::$initiated = TRUE;
+
+      add_action("edit_user_profile", array("KdGFablab_RS_Admin", "kdg_fablab_rs_show_custom_profile_fields"));
+      add_action("show_user_profile", array("KdGFablab_RS_Admin", "kdg_fablab_rs_show_custom_profile_fields"));
+
+      add_filter("manage_users_custom_column", array("KdGFablab_RS_Admin", "kdg_fablab_rs_modify_user_table_row"), 10, 3);
+      add_filter("manage_users_columns", array("KdGFablab_RS_Admin", "kdg_fablab_rs_modify_user_table"));
+    }
+
+    /**
+     * Add custom columns to the users admin lay-out.
+     */
+    public static function kdg_fablab_rs_modify_user_table($column) {
+      $column['who_are_you'] = "Wie ben je?";
+      $column["company_name"] = "Naam bedrijf";
+      $column['address'] = 'Adres';
+      $column['postal_code'] = 'Postcode';
+      $column['city'] = 'Gemeente';
+      $column['tel_number'] = 'Telefoonnummer';
+      $column['VAT_number'] = 'BTW-nummer';
+
+      return $column;
+    }
+
+    /**
+     * Show custom profile fields when admin is editing or looking up a profile
+     */
+    public static function kdg_fablab_rs_show_custom_profile_fields($user) {
+     ?>
+     <h3><?php esc_html_e("Extra informatie"); ?></h3>
+     <table class="form-table">
+       <tr>
+         <th>
+           <label for="who_are_you"><?php esc_html_e("Wie ben je?"); ?></label>
+           <td>
+             <?php echo esc_html(get_the_author_meta("who_are_you", $user->ID)); ?>
+           </td>
+         </th>
+       </tr>
+
+       <tr>
+         <th>
+           <label for="address"><?php esc_html_e("Adres"); ?></label>
+           <td>
+             <?php echo esc_html(get_the_author_meta("address", $user->ID)); ?>
+           </td>
+         </th>
+       </tr>
+
+       <tr>
+         <th>
+           <label for="tel_number"><?php esc_html_e("Telefoonnummer"); ?></label>
+           <td>
+             <?php echo esc_html(get_the_author_meta("tel_number", $user->ID)); ?>
+           </td>
+         </th>
+       </tr>
+
+       <tr>
+         <th>
+           <label for="postal_code"><?php esc_html_e("Postcode"); ?></label>
+           <td>
+             <?php echo esc_html(get_the_author_meta("postal_code", $user->ID)); ?>
+           </td>
+         </th>
+       </tr>
+
+       <tr>
+         <th>
+           <label for="city"><?php esc_html_e("Gemeente"); ?></label>
+           <td>
+             <?php echo esc_html(get_the_author_meta("city", $user->ID)); ?>
+           </td>
+         </th>
+       </tr>
+
+       <?php if(metadata_exists("user", $user->ID, "VAT_number")) { ?>
+       <tr>
+         <th>
+           <label for="VAT_number"><?php esc_html_e("BTW-nummer"); ?></label>
+           <td>
+             <?php echo esc_html(get_the_author_meta("VAT_number", $user->ID)); ?>
+           </td>
+         </th>
+       </tr>
+      <?php } ?>
+
+      <?php if(metadata_exists("user", $user->ID, "company_name")) { ?>
+      <tr>
+        <th>
+          <label for="company_name"><?php esc_html_e("Naam bedrijf"); ?></label>
+          <td>
+            <?php echo esc_html(get_the_author_meta("company_name", $user->ID)); ?>
+          </td>
+        </th>
+      </tr>
+     <?php } ?>
+     </table>
+     <?php
+    }
+
+    /**
+     * Get the user data in the column fields lay-out in the admin area.
+     */
+    public static function kdg_fablab_rs_modify_user_table_row($val, $column_name, $user_id) {
+      global $wpdb;
+
+      if ($column_name == 'who_are_you') {
+        $who_are_you = $wpdb->get_var($wpdb->prepare("SELECT meta_value FROM $wpdb->usermeta WHERE meta_key = 'who_are_you' AND user_id = %s", $user_id));
+        return $who_are_you;
+      }
+
+      if ($column_name == 'address') {
+        $address = $wpdb->get_var($wpdb->prepare( "SELECT meta_value FROM $wpdb->usermeta WHERE meta_key = 'address' AND user_id = %s", $user_id));
+        return $address;
+      }
+
+      if ($column_name == 'postal_code') {
+        $postal_code = $wpdb->get_var($wpdb->prepare( "SELECT meta_value FROM $wpdb->usermeta WHERE meta_key = 'postal_code' AND user_id = %s", $user_id));
+        return $postal_code;
+      }
+
+      if ($column_name == 'city') {
+        $city = $wpdb->get_var($wpdb->prepare( "SELECT meta_value FROM $wpdb->usermeta WHERE meta_key = 'city' AND user_id = %s", $user_id));
+        return $city;
+      }
+
+      if ($column_name == 'tel_number') {
+        $tel_number = $wpdb->get_var($wpdb->prepare( "SELECT meta_value FROM $wpdb->usermeta WHERE meta_key = 'tel_number' AND user_id = %s", $user_id));
+        return $tel_number;
+      }
+
+      if ($column_name == 'VAT_number') {
+        $VAT_number = $wpdb->get_var($wpdb->prepare( "SELECT meta_value FROM $wpdb->usermeta WHERE meta_key = 'VAT_number' AND user_id = %s", $user_id));
+        return $VAT_number;
+      }
+
+      if ($column_name == 'company_name') {
+        $company_name = $wpdb->get_var($wpdb->prepare( "SELECT meta_value FROM $wpdb->usermeta WHERE meta_key = 'company_name' AND user_id = %s", $user_id));
+        return $company_name;
+      }
+
+      return $val;
     }
   }

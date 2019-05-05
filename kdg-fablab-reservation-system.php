@@ -25,7 +25,10 @@
   register_deactivation_hook(__FILE__, 'kdg_fablab_rs_plugin_deactivation'); // execute on deactivation
 
   // requirements
-  require_once(KDG_FABLAB_RS_PLUGIN_DIR . 'class.kdg-fablab-rs-admin.php');
+  require_once(KDG_FABLAB_RS_PLUGIN_DIR . 'class.kdg-fablab-rs.php');
+
+  // execute KdGFablab_RS.init() when plugin is initialized
+  add_action('init', array('KdGFablab_RS', 'init'));
 
   // when the current user is an admin
   if (is_admin() || (defined('WP_CLI') && WP_CLI)) {
