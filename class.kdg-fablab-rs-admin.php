@@ -13,9 +13,75 @@
 
       add_action("edit_user_profile", array("KdGFablab_RS_Admin", "kdg_fablab_rs_show_custom_profile_fields"));
       add_action("show_user_profile", array("KdGFablab_RS_Admin", "kdg_fablab_rs_show_custom_profile_fields"));
+      add_action('admin_notices', array('KdGFablab_RS_Admin', 'kdg_fablab_rs_admin_notice'));
 
       add_filter("manage_users_custom_column", array("KdGFablab_RS_Admin", "kdg_fablab_rs_modify_user_table_row"), 10, 3);
       add_filter("manage_users_columns", array("KdGFablab_RS_Admin", "kdg_fablab_rs_modify_user_table"));
+    }
+
+    /**
+     * Inform the admin on how to add new machines
+     */
+    public static function kdg_fablab_rs_admin_notice() {
+      if (get_transient('kdg-fablab-rs-admin-notice-page-reserveren-made')) {
+      ?>
+        <div class="updated notice-is-dismissible">
+          <p>
+            Reserveren-pagina aangemaakt!
+          </p>
+          <p>
+            Om deze pagina toe te voegen aan het menu, ga naar: Weegave > Menu's.
+          </p>
+        </div>
+      <?php
+        // delete the transient, so it only gets displayed once
+        delete_transient('kdg-fablab-rs-admin-notice-page-reserveren-made');
+      }
+
+      if (get_transient('kdg-fablab-rs-admin-notice-page-profile-made')) {
+      ?>
+        <div class="updated notice-is-dismissible">
+          <p>
+            "Mijn profiel"-pagina aangemaakt!
+          </p>
+          <p>
+            Om deze pagina toe te voegen aan het menu, ga naar: Weegave > Menu's.
+          </p>
+        </div>
+      <?php
+        // delete the transient, so it only gets displayed once
+        delete_transient('kdg-fablab-rs-admin-notice-page-profile-made');
+      }
+
+      if (get_transient('kdg-fablab-rs-admin-notice-page-edit-profile-made')) {
+      ?>
+        <div class="updated notice-is-dismissible">
+          <p>
+            "Profiel bewerken"-pagina aangemaakt!
+          </p>
+          <p>
+            Om deze pagina toe te voegen aan het menu, ga naar: Weegave > Menu's.
+          </p>
+        </div>
+      <?php
+        // delete the transient, so it only gets displayed once
+        delete_transient('kdg-fablab-rs-admin-notice-page-edit-profile-made');
+      }
+
+      if (get_transient('kdg-fablab-rs-admin-notice-page-profile-reservations-made')) {
+      ?>
+        <div class="updated notice-is-dismissible">
+          <p>
+            "Mijn reservaties"-pagina aangemaakt!
+          </p>
+          <p>
+            Om deze pagina toe te voegen aan het menu, ga naar: Weegave > Menu's.
+          </p>
+        </div>
+      <?php
+        // delete the transient, so it only gets displayed once
+        delete_transient('kdg-fablab-rs-admin-notice-page-profile-reservations-made');
+      }
     }
 
     /**

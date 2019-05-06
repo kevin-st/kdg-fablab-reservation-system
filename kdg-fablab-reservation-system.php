@@ -44,6 +44,63 @@
    */
   function kdg_fablab_rs_plugin_activation() {
     // code to be executed when plugin is activated
+    if (!current_user_can('activate_plugins')) {
+      return;
+    }
+
+    global $wpdb;
+
+    if ($wpdb->get_row("SELECT post_name FROM $wpdb->posts WHERE post_name = 'reserveren'", 'ARRAY_A') === NULL) {
+      set_transient("kdg-fablab-rs-admin-notice-page-reserveren-made", true, 5);
+
+      wp_insert_post([
+        "post_title"    => "Reserveren",
+        "post_status"   => "publish",
+        "post_author"   => 1,
+        "post_type"     => "page",
+        "page_template" => "page-reserveren.php"
+      ]);
+    }
+
+    if ($wpdb->get_row("SELECT post_name FROM $wpdb->posts WHERE post_name = 'mijn-profiel'", 'ARRAY_A') === NULL) {
+      set_transient("kdg-fablab-rs-admin-notice-page-profile-made", true, 5);
+
+      wp_insert_post([
+        "post_title"    => "Mijn profiel",
+        "post_status"   => "publish",
+        "post_author"   => 1,
+        "post_type"     => "page",
+        "page_template" => "page-profile.php"
+      ]);
+    }
+
+    if ($wpdb->get_row("SELECT post_name FROM $wpdb->posts WHERE post_name = 'edit'", 'ARRAY_A') === NULL) {
+      set_transient("kdg-fablab-rs-admin-notice-page-edit-profile-made", true, 5);
+
+      wp_insert_post([
+        "post_title"    => "Profiel bewerken",
+        "post_name"     => "edit",
+        "post_status"   => "publish",
+        "post_author"   => 1,
+        "post_parent"   => get_page_by_title("Mijn profiel")->ID,
+        "post_type"     => "page",
+        "page_template" => "edit-profile.php"
+      ]);
+    }
+
+    if ($wpdb->get_row("SELECT post_name FROM $wpdb->posts WHERE post_name = 'reservaties'", 'ARRAY_A') === NULL) {
+      set_transient("kdg-fablab-rs-admin-notice-page-profile-reservations-made", true, 5);
+
+      wp_insert_post([
+        "post_title"    => "Mijn reservaties",
+        "post_name"     => "reservaties",
+        "post_status"   => "publish",
+        "post_author"   => 1,
+        "post_parent"   => get_page_by_title("Mijn profiel")->ID,
+        "post_type"     => "page",
+        "page_template" => "my-reservations.php"
+      ]);
+    }
   }
 
   /**
