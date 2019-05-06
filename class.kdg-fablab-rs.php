@@ -65,6 +65,7 @@
      */
     public static function kdg_fablab_rs_query_vars($vars) {
       $vars[] = "id";
+      $vars[] = "type";
 
       return $vars;
     }
