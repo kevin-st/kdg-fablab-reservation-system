@@ -11,12 +11,73 @@
     private static function init_hooks() {
       self::$initiated = TRUE;
 
+      add_action("admin_init", array("KdGFablab_RS_Admin", "kdg_fablab_rs_admin_register_fablab_settings"));
+      add_action("admin_menu", array("KdGFablab_RS_Admin", "kdg_fablab_rs_admin_settings_menu"));
       add_action("edit_user_profile", array("KdGFablab_RS_Admin", "kdg_fablab_rs_show_custom_profile_fields"));
       add_action("show_user_profile", array("KdGFablab_RS_Admin", "kdg_fablab_rs_show_custom_profile_fields"));
       add_action('admin_notices', array('KdGFablab_RS_Admin', 'kdg_fablab_rs_admin_notice'));
 
       add_filter("manage_users_custom_column", array("KdGFablab_RS_Admin", "kdg_fablab_rs_modify_user_table_row"), 10, 3);
       add_filter("manage_users_columns", array("KdGFablab_RS_Admin", "kdg_fablab_rs_modify_user_table"));
+    }
+
+    /**
+     * Register settings for Inventory plugin
+     */
+    public static function kdg_fablab_rs_admin_register_fablab_settings() {
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_start_opening_hour");
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_end_opening_hour");
+    }
+
+    /**
+     * Add a settings menu to the default settings menu from WordPress
+     */
+    public static function kdg_fablab_rs_admin_settings_menu() {
+      add_options_page(
+        "KdG Fablab Reservatie Instellingen",
+        "Fablab Reservaties",
+        "manage_options",
+        "kdg-fablab-reservaties",
+        ["KdGFablab_RS_Admin", "kdg_fablab_rs_admin_display_settings_page"]
+      );
+    }
+
+    /**
+     * Display content for the settings page of this plugin
+     */
+    public static function kdg_fablab_rs_admin_display_settings_page() {
+      if (!current_user_can("manage_options")) {
+        wp_die("You do not have sufficient permissions to access this page.");
+      }
+    ?>
+    <div class="wrap">
+      <h2>KdG Fablab Reservatie Instellingen</h2>
+      <form method="post" action="options.php">
+        <?php
+          settings_fields("kdg_fablab_rs_option-group");
+          do_settings_fields("kdg_fablab_rs_option-group", "");
+        ?>
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <th scope="row">
+                Openingsuren
+              </th>
+              <td>
+                <label for="kdg_fablab_rs_start_opening_hour">van</label>
+                <input name="kdg_fablab_rs_start_opening_hour" type="number" min="0" max="23" step="1" value="<?php echo get_option("kdg_fablab_rs_start_opening_hour"); ?>" />
+                <label for="kdg_fablab_rs_end_opening_hour">tot</label>
+                <input name="kdg_fablab_rs_end_opening_hour" type="number" min="0" max="23" step="1" value="<?php echo get_option("kdg_fablab_rs_end_opening_hour"); ?>" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <?php
+          submit_button();
+        ?>
+      </form>
+    </div>
+    <?php
     }
 
     /**

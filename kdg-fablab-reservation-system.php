@@ -48,6 +48,8 @@
       return;
     }
 
+    kdg_fablab_rs_update_settings();
+
     global $wpdb;
 
     if ($wpdb->get_row("SELECT post_name FROM $wpdb->posts WHERE post_name = 'reserveren'", 'ARRAY_A') === NULL) {
@@ -108,4 +110,14 @@
    */
   function kdg_fablab_rs_plugin_deactivation() {
     // code to be executed when plugin is deactivated
+    delete_option("kdg_fablab_rs_start_opening_hour");
+    delete_option("kdg_fablab_rs_end_opening_hour");
+  }
+
+  /**
+   * Initialize and update settings for the reservation plugin
+   */
+  function kdg_fablab_rs_update_settings() {
+    update_option("kdg_fablab_rs_start_opening_hour", "9");
+    update_option("kdg_fablab_rs_end_opening_hour", "18");
   }

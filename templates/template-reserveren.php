@@ -14,20 +14,21 @@
    */
 ?>
 <main>
-  <h1>Reserveren</h1>
-  <?php
-    $homepage_news = new WP_Query([
-      "post_type" => "machine",
-      "posts_per_page" => -1 // control number of posts with this -> -1 is all posts
-    ]);
-
-  while($homepage_news->have_posts()) {
-    $homepage_news->the_post();
-?>
-  <h2><?php the_title(); ?></h2>
-<?php
-  }
-?>
+  <div class="title-content">
+    <?php
+      while(have_posts()) {
+        the_post();
+    ?>
+    <h1><?php the_title(); ?></h1>
+    <?php
+        the_content();
+      }
+    ?>
+  </div>
+  <div class="page-reserveren-content">
+    <form id="reservation-form" action="<?php the_permalink(); ?>" method="post">
+    </form>
+  </div>
 </main>
 <?php
   get_footer();
