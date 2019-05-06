@@ -29,6 +29,7 @@
 
   // execute KdGFablab_RS.init() when plugin is initialized
   add_action('init', array('KdGFablab_RS', 'init'));
+  add_action("admin_enqueue_scripts", "kdg_fablab_rs_enqueue_scripts");
 
   // when the current user is an admin
   if (is_admin() || (defined('WP_CLI') && WP_CLI)) {
@@ -113,9 +114,26 @@
   }
 
   /**
+   * Add styles and scripts to the admin
+   */
+  function kdg_fablab_rs_enqueue_scripts() {
+    wp_enqueue_style("admin-styles", get_template_directory_uri() . '/css/modules/admin.css');
+  }
+
+  /**
    * Initialize and update settings for the reservation plugin
    */
   function kdg_fablab_rs_update_settings() {
-    update_option("kdg_fablab_rs_start_opening_hour", "9");
-    update_option("kdg_fablab_rs_end_opening_hour", "18");
+    if (!get_option("kdg_fablab_rs_start_opening_hour")) {
+      update_option("kdg_fablab_rs_start_opening_hour", "9");
+    }
+
+    if (!get_option("kdg_fablab_rs_end_opening_hour")) {
+      update_option("kdg_fablab_rs_end_opening_hour", "18");
+    }
+
+    if (!get_option("kdg_fablab_rs_time_slot")) {
+      update_option("kdg_fablab_rs_time_slot", "15");
+    }
+
   }

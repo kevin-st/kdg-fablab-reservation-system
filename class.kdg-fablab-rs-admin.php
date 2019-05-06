@@ -27,6 +27,7 @@
     public static function kdg_fablab_rs_admin_register_fablab_settings() {
       register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_start_opening_hour");
       register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_end_opening_hour");
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_time_slot");
     }
 
     /**
@@ -68,6 +69,15 @@
                 <input name="kdg_fablab_rs_start_opening_hour" type="number" min="0" max="23" step="1" value="<?php echo get_option("kdg_fablab_rs_start_opening_hour"); ?>" />
                 <label for="kdg_fablab_rs_end_opening_hour">tot</label>
                 <input name="kdg_fablab_rs_end_opening_hour" type="number" min="0" max="23" step="1" value="<?php echo get_option("kdg_fablab_rs_end_opening_hour"); ?>" />
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Tijdslot reservatie
+              </th>
+              <td>
+                <input name="kdg_fablab_rs_time_slot" type="number" min="0" max="60" step="5" value="<?php echo get_option("kdg_fablab_rs_time_slot"); ?>" />
+                minuten
               </td>
             </tr>
           </tbody>
