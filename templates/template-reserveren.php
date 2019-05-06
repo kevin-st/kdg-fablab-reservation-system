@@ -1,17 +1,6 @@
-<?php get_header(); ?>
 <?php
-  /*
-    REMOVE THIS COMMENT
 
-    content for generic page goes here (layout can be used accross multiple pages):
-    -> e.g.
-      - About us
-      - Biography of an author
-      - ...
-
-    creating a custom page:
-    -> https://developer.wordpress.org/themes/template-files-section/page-template-files/#creating-custom-page-templates-for-global-use
-   */
+  get_header();
 ?>
 <main>
   <div class="title-content">
