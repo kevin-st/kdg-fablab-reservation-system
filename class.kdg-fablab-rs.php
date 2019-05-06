@@ -8,6 +8,7 @@
     public static function init() {
       if (!self::$_initiated) {
         self::init_hooks();
+        self::kdg_fablab_rs_register_custom_post_types();
       }
     }
 
@@ -186,5 +187,34 @@
       if (is_author()) {
         wp_redirect(home_url());
       }
+    }
+
+    /**
+     * Enable custom post types for this plugin.
+     */
+    private static function kdg_fablab_rs_register_custom_post_types() {
+      // machine post type
+      register_post_type("reservation",
+        [
+          "description" => "Reservaties worden gemaakt door een gebruiker, en bevatten informatie over toestellen en workshops.",
+          "labels" => [
+            "all_items"     => __("Alle reservaties"),
+            "edit_item"     => __("Reservatie bijwerken"),
+            "name"          => __("Reservaties"),
+            "search_items"      => __("Reservatie zoeken"),
+            "singular_name" => __("Reservatie")
+          ],
+          'capabilities' => [
+            'create_posts' => 'do_not_allow',
+          ],
+          "has_archive" => true,
+          "menu_icon" => "dashicons-format-aside",
+          "public" => true,
+          "query_var" => true,
+          "supports" => [ "title", "editor", "thumbnail" ],
+          "rewrite" => ["slug" => "reservaties"]
+        ]);
+
+      flush_rewrite_rules();
     }
   }
