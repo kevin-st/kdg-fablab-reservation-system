@@ -25,10 +25,8 @@
      * Register settings for Inventory plugin
      */
     public static function kdg_fablab_rs_admin_register_fablab_settings() {
-      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_start_opening_hour");
-      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_end_opening_hour");
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_opening_hours");
       register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_time_slot");
-      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_open_in_weekends");
     }
 
     /**
@@ -51,6 +49,14 @@
       if (!current_user_can("manage_options")) {
         wp_die("You do not have sufficient permissions to access this page.");
       }
+
+      $monday_opening_hours = get_option("kdg_fablab_rs_opening_hours")["monday"];
+      $tuesday_opening_hours = get_option("kdg_fablab_rs_opening_hours")["tuesday"];
+      $wednesday_opening_hours = get_option("kdg_fablab_rs_opening_hours")["wednesday"];
+      $thursday_opening_hours = get_option("kdg_fablab_rs_opening_hours")["thursday"];
+      $friday_opening_hours = get_option("kdg_fablab_rs_opening_hours")["friday"];
+      $saturday_opening_hours = get_option("kdg_fablab_rs_opening_hours")["saturday"];
+      $sunday_opening_hours = get_option("kdg_fablab_rs_opening_hours")["sunday"];
     ?>
     <div class="wrap">
       <h2>KdG Fablab Reservatie Instellingen</h2>
@@ -61,16 +67,232 @@
         ?>
         <table class="form-table">
           <tbody>
+            <tr scope="row">
+              <th>
+                <h2>Openingsuren</h2>
+              </th>
+            </tr>
             <tr>
               <th scope="row">
-                Openingsuren
+                Maandag
               </th>
               <td>
-                <label for="kdg_fablab_rs_start_opening_hour">van</label>
-                <input name="kdg_fablab_rs_start_opening_hour" type="number" min="0" max="23" step="1" value="<?php echo get_option("kdg_fablab_rs_start_opening_hour"); ?>" />
-                <label for="kdg_fablab_rs_end_opening_hour">tot</label>
-                <input name="kdg_fablab_rs_end_opening_hour" type="number" min="0" max="23" step="1" value="<?php echo get_option("kdg_fablab_rs_end_opening_hour"); ?>" />
+                <label for="kdg_fablab_rs_opening_hours[monday][start]">van</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[monday][start]"
+                  name="kdg_fablab_rs_opening_hours[monday][start]"
+                  type="time"
+                  value="<?php echo $monday_opening_hours["start"]; ?>"
+                  <?php echo (!empty($monday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[monday][end]">tot</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[monday][end]"
+                  name="kdg_fablab_rs_opening_hours[monday][end]"
+                  type="time"
+                  value="<?php echo $monday_opening_hours["end"]; ?>"
+                  <?php echo (!empty($monday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <input
+                  id="kdg_fablab_rs_opening_hours[monday][is_closed]"
+                  name="kdg_fablab_rs_opening_hours[monday][is_closed]"
+                  type="checkbox"
+                  value="maandag-gesloten"
+                  <?php echo (!empty($monday_opening_hours["is_closed"])) ? "checked" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[monday][is_closed]">gesloten</label>
               </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Dinsdag
+              </th>
+              <td>
+                <label for="kdg_fablab_rs_opening_hours[tuesday][start]">van</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[tuesday][start]"
+                  name="kdg_fablab_rs_opening_hours[tuesday][start]"
+                  type="time"
+                  value="<?php echo $tuesday_opening_hours["start"]; ?>"
+                  <?php echo (!empty($tuesday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[tuesday][end]">tot</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[tuesday][end]"
+                  name="kdg_fablab_rs_opening_hours[tuesday][end]"
+                  type="time"
+                  value="<?php echo $tuesday_opening_hours["end"]; ?>"
+                  <?php echo (!empty($tuesday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <input
+                  id="kdg_fablab_rs_opening_hours[tuesday][is_closed]"
+                  name="kdg_fablab_rs_opening_hours[tuesday][is_closed]"
+                  type="checkbox"
+                  value="dinsdag-gesloten"
+                  <?php echo (!empty($tuesday_opening_hours["is_closed"])) ? "checked" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[tuesday][is_closed]">gesloten</label>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Woensdag
+              </th>
+              <td>
+                <label for="kdg_fablab_rs_opening_hours[wednesday][start]">van</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[wednesday][start]"
+                  name="kdg_fablab_rs_opening_hours[wednesday][start]"
+                  type="time"
+                  value="<?php echo $wednesday_opening_hours["start"]; ?>"
+                  <?php echo (!empty($wednesday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[wednesday][end]">tot</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[wednesday][end]"
+                  name="kdg_fablab_rs_opening_hours[wednesday][end]"
+                  type="time"
+                  value="<?php echo $wednesday_opening_hours["end"]; ?>"
+                  <?php echo (!empty($wednesday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <input
+                  id="kdg_fablab_rs_opening_hours[wednesday][is_closed]"
+                  name="kdg_fablab_rs_opening_hours[wednesday][is_closed]"
+                  type="checkbox"
+                  value="woensdag-gesloten"
+                  <?php echo (!empty($wednesday_opening_hours["is_closed"])) ? "checked" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[wednesday][is_closed]">gesloten</label>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Donderdag
+              </th>
+              <td>
+                <label for="kdg_fablab_rs_opening_hours[thursday][start]">van</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[thursday][start]"
+                  name="kdg_fablab_rs_opening_hours[thursday][start]"
+                  type="time"
+                  value="<?php echo $thursday_opening_hours["start"]; ?>"
+                  <?php echo (!empty($thursday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[thursday][end]">tot</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[thursday][end]"
+                  name="kdg_fablab_rs_opening_hours[thursday][end]"
+                  type="time"
+                  value="<?php echo $thursday_opening_hours["end"]; ?>"
+                  <?php echo (!empty($thursday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <input
+                  id="kdg_fablab_rs_opening_hours[thursday][is_closed]"
+                  name="kdg_fablab_rs_opening_hours[thursday][is_closed]"
+                  type="checkbox"
+                  value="donderdag-gesloten"
+                  <?php echo (!empty($thursday_opening_hours["is_closed"])) ? "checked" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[thursday][is_closed]">gesloten</label>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Vrijdag
+              </th>
+              <td>
+                <label for="kdg_fablab_rs_opening_hours[friday][start]">van</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[friday][start]"
+                  name="kdg_fablab_rs_opening_hours[friday][start]"
+                  type="time"
+                  value="<?php echo $friday_opening_hours["start"]; ?>"
+                  <?php echo (!empty($friday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[friday][end]">tot</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[friday][end]"
+                  name="kdg_fablab_rs_opening_hours[friday][end]"
+                  type="time"
+                  value="<?php echo $friday_opening_hours["end"]; ?>"
+                  <?php echo (!empty($friday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <input
+                  id="kdg_fablab_rs_opening_hours[friday][is_closed]"
+                  name="kdg_fablab_rs_opening_hours[friday][is_closed]"
+                  type="checkbox"
+                  value="dinsdag-gesloten"
+                  <?php echo (!empty($friday_opening_hours["is_closed"])) ? "checked" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[friday][is_closed]">gesloten</label>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Zaterdag
+              </th>
+              <td>
+                <label for="kdg_fablab_rs_opening_hours[saturday][start]">van</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[saturday][start]"
+                  name="kdg_fablab_rs_opening_hours[saturday][start]"
+                  type="time"
+                  value="<?php echo $saturday_opening_hours["start"]; ?>"
+                  <?php echo (!empty($saturday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[saturday][end]">tot</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[saturday][end]"
+                  name="kdg_fablab_rs_opening_hours[saturday][end]"
+                  type="time"
+                  value="<?php echo $saturday_opening_hours["end"]; ?>"
+                  <?php echo (!empty($saturday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <input
+                  id="kdg_fablab_rs_opening_hours[saturday][is_closed]"
+                  name="kdg_fablab_rs_opening_hours[saturday][is_closed]"
+                  type="checkbox"
+                  value="zaterdag-gesloten"
+                  <?php echo (!empty($saturday_opening_hours["is_closed"])) ? "checked" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[saturday][is_closed]">gesloten</label>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Zondag
+              </th>
+              <td>
+                <label for="kdg_fablab_rs_opening_hours[sunday][start]">van</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[sunday][start]"
+                  name="kdg_fablab_rs_opening_hours[sunday][start]"
+                  type="time"
+                  value="<?php echo $sunday_opening_hours["start"]; ?>"
+                  <?php echo (!empty($sunday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[sunday][end]">tot</label>
+                <input
+                  id="kdg_fablab_rs_opening_hours[sunday][end]"
+                  name="kdg_fablab_rs_opening_hours[sunday][end]"
+                  type="time"
+                  value="<?php echo $sunday_opening_hours["end"]; ?>"
+                  <?php echo (!empty($sunday_opening_hours["is_closed"])) ? "disabled" : ""; ?>
+                />
+                <input
+                  id="kdg_fablab_rs_opening_hours[sunday][is_closed]"
+                  name="kdg_fablab_rs_opening_hours[sunday][is_closed]"
+                  type="checkbox"
+                  value="zondag-gesloten"
+                  <?php echo (!empty($sunday_opening_hours["is_closed"])) ? "checked" : ""; ?>
+                />
+                <label for="kdg_fablab_rs_opening_hours[sunday][is_closed]">gesloten</label>
+              </td>
+            </tr>
+            <tr scope="row">
+              <th>
+                <h2>Reservaties</h2>
+              </th>
             </tr>
             <tr>
               <th scope="row">
@@ -79,19 +301,6 @@
               <td>
                 <input name="kdg_fablab_rs_time_slot" type="number" min="0" max="60" step="5" value="<?php echo get_option("kdg_fablab_rs_time_slot"); ?>" />
                 minuten
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">
-                Open in weekends?
-              </th>
-              <td>
-                <input
-                  name="kdg_fablab_rs_open_in_weekends"
-                  type="checkbox"
-                  value="<?php echo (get_option("kdg_fablab_rs_open_in_weekends") === "false") ? "true" : "false"; ?>"
-                  <?php echo (get_option("kdg_fablab_rs_open_in_weekends") === "false") ? "" : "checked"; ?>
-                />
               </td>
             </tr>
           </tbody>

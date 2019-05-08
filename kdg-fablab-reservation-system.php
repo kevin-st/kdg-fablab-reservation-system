@@ -111,6 +111,9 @@
    */
   function kdg_fablab_rs_plugin_deactivation() {
     // code to be executed when plugin is deactivated
+    delete_option("kdg_fablab_rs_end_opening_hour");
+    delete_option("kdg_fablab_rs_start_opening_hour");
+    delete_option("kdg_fablab_rs_open_in_weekends");
   }
 
   /**
@@ -124,19 +127,11 @@
    * Initialize and update settings for the reservation plugin
    */
   function kdg_fablab_rs_update_settings() {
-    if (!get_option("kdg_fablab_rs_start_opening_hour")) {
-      update_option("kdg_fablab_rs_start_opening_hour", "9");
-    }
-
-    if (!get_option("kdg_fablab_rs_end_opening_hour")) {
-      update_option("kdg_fablab_rs_end_opening_hour", "18");
+    if (!get_option("kdg_fablab_rs_opening_hours")) {
+      update_option("kdg_fablab_rs_opening_hours", "");
     }
 
     if (!get_option("kdg_fablab_rs_time_slot")) {
       update_option("kdg_fablab_rs_time_slot", "15");
-    }
-
-    if (!get_option("kdg_fablab_rs_open_in_weekends")) {
-      update_option("kdg_fablab_rs_open_in_weekends", "false");
     }
   }
