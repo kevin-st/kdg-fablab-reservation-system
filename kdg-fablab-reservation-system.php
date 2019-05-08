@@ -111,9 +111,6 @@
    */
   function kdg_fablab_rs_plugin_deactivation() {
     // code to be executed when plugin is deactivated
-    delete_option("kdg_fablab_rs_end_opening_hour");
-    delete_option("kdg_fablab_rs_start_opening_hour");
-    delete_option("kdg_fablab_rs_open_in_weekends");
   }
 
   /**
