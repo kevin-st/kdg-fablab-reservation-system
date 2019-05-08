@@ -28,6 +28,7 @@
       register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_start_opening_hour");
       register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_end_opening_hour");
       register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_time_slot");
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_open_in_weekends");
     }
 
     /**
@@ -78,6 +79,19 @@
               <td>
                 <input name="kdg_fablab_rs_time_slot" type="number" min="0" max="60" step="5" value="<?php echo get_option("kdg_fablab_rs_time_slot"); ?>" />
                 minuten
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Open in weekends?
+              </th>
+              <td>
+                <input
+                  name="kdg_fablab_rs_open_in_weekends"
+                  type="checkbox"
+                  value="<?php echo (get_option("kdg_fablab_rs_open_in_weekends") === "false") ? "true" : "false"; ?>"
+                  <?php echo (get_option("kdg_fablab_rs_open_in_weekends") === "false") ? "" : "checked"; ?>
+                />
               </td>
             </tr>
           </tbody>

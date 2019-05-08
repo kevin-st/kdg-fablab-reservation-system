@@ -136,4 +136,7 @@
       update_option("kdg_fablab_rs_time_slot", "15");
     }
 
+    if (!get_option("kdg_fablab_rs_open_in_weekends")) {
+      update_option("kdg_fablab_rs_open_in_weekends", "false");
+    }
   }
