@@ -299,7 +299,7 @@
                 Tijdslot reservatie
               </th>
               <td>
-                <input name="kdg_fablab_rs_time_slot" type="number" min="0" max="60" step="5" value="<?php echo get_option("kdg_fablab_rs_time_slot"); ?>" />
+                <input name="kdg_fablab_rs_time_slot" type="number" min="5" max="60" step="5" value="<?php echo get_option("kdg_fablab_rs_time_slot"); ?>" />
                 minuten
               </td>
             </tr>
