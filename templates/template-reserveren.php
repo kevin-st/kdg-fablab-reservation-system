@@ -1,5 +1,10 @@
 <?php /* Template Name: Reserveren Template */ ?>
 <?php
+  if (!is_user_logged_in()) {
+    wp_redirect(home_url());
+    exit;
+  }
+
   $current_step = isset($_SESSION["reservation"]["reservation-step"]) ? intval($_SESSION["reservation"]["reservation-step"]) : 0;
   $reservation_type = isset($_SESSION["reservation"]["reservation-type"]) ? $_SESSION["reservation"]["reservation-type"] : NULL;
   $reservation_item = isset($_SESSION["reservation"]["reservation-item"]) ? $_SESSION["reservation"]["reservation-item"] : NULL;
