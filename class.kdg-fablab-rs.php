@@ -19,6 +19,8 @@
       self::$_initiated = TRUE;
 
       add_action('admin_init', array("KdGFablab_RS", "kdg_fablab_rs_redirect_to_front_end"));
+      add_action("manage_reservation_posts_custom_column", array("KdGFablab_RS", "kdg_fablab_rs_manage_admin_columns_data"), 10, 2);
+      add_action('pre_get_posts', array("KdGFablab_RS", "kdg_fablab_rs_alter_admin_query"));
       add_action('register_form', array("KdGFablab_RS", "kdg_fablab_rs_registration_form"));
       add_action("template_redirect", array("KdGFablab_RS", "kdg_fablab_rs_redirect"));
       add_action('template_redirect', array("KdGFablab_RS", "kdg_fablab_rs_author_page_redirect"));
@@ -28,6 +30,7 @@
       add_filter("generate_rewrite_rules", array("KdGFablab_RS", "kdg_fablab_rs_custom_rewrite_rules"));
       add_filter("query_vars", array("KdGFablab_RS", "kdg_fablab_rs_query_vars"));
       add_filter('registration_errors', array("KdGFablab_RS", "kdg_fablab_rs_registration_errors"), 10, 3);
+      add_filter('manage_reservation_posts_columns', array("KdGFablab_RS", "kdg_fablab_rs_manage_admin_columns"));
     }
 
     /**
@@ -67,7 +70,95 @@
       $vars[] = "id";
       $vars[] = "type";
 
+      $vars[] = "reservation-type";
+      $vars[] = "reservation-item";
+      $vars[] = "reservation-date";
+
       return $vars;
+    }
+
+    /**
+     * Add admin columns to reservations overview (admin)
+     */
+    public static function kdg_fablab_rs_manage_admin_columns() {
+      $columns["title"] = "Naam";
+      $columns["author"] = "Klant";
+      $columns['reservation-type'] = "Type reservatie";
+      $columns["reservation-item"] = "Toestel/Workshop";
+      $columns['reservation-date'] = "Datum";
+      $columns["reservation-time-slots"] = "Tijdstippen";
+
+      return $columns;
+    }
+
+    /**
+     * Fetch data for each custom column in reservation overview (admin)
+     */
+    public static function kdg_fablab_rs_manage_admin_columns_data($column, $post_id) {
+      switch($column) {
+        case "reservation-type":
+          $val = get_post_meta($post_id, "reservation_type", true);
+
+          echo '<a href="';
+          echo admin_url( 'edit.php?post_type=reservation&reservation-type=' . urlencode($val));
+          echo '">';
+          echo $val;
+          echo '</a>';
+          break;
+
+        case "reservation-item":
+          $val = get_post_meta($post_id, "reservation_item", true);
+
+          echo '<a href="';
+          echo admin_url( 'edit.php?post_type=reservation&reservation-item=' . urlencode($val));
+          echo '">';
+          echo $val;
+          echo '</a>';
+          break;
+
+        case "reservation-date":
+          $val = get_post_meta($post_id, "reservation_date", true);
+
+          echo '<a href="';
+          echo admin_url( 'edit.php?post_type=reservation&reservation-date=' . urlencode($val));
+          echo '">';
+          echo date_i18n("d F Y", strtotime($val));
+          echo '</a>';
+          break;
+
+        case "reservation-time-slots":
+          $time_slots = get_post_meta($post_id, "reservation_time_slots", true);
+
+          foreach($time_slots as $time_slot) {
+            echo "<li>" . $time_slot . "</li>";
+          }
+
+          break;
+      }
+    }
+
+    /**
+     * Setup custom query vars for reservation overview (admin)
+     */
+    public static function kdg_fablab_rs_alter_admin_query($query) {
+      if (!is_admin() || $query->query['post_type'] !== "reservation") {
+        return;
+      }
+
+      if (isset($query->query_vars['reservation-type'])) {
+        $query->set('meta_key', 'reservation_type');
+        $query->set('meta_value', $query->query_vars['reservation-type'] );
+      }
+
+      if (isset($query->query_vars['reservation-item'])) {
+        $query->set('meta_key', 'reservation_item');
+        $query->set('meta_value', $query->query_vars['reservation-item'] );
+      }
+
+      if (isset($query->query_vars['reservation-date'])) {
+        $query->set('meta_key', 'reservation_date');
+        $query->set('meta_value', $query->query_vars['reservation-date'] );
+      }
     }
 
     /**
