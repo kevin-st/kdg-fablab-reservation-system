@@ -299,11 +299,11 @@
           'capabilities' => [
             'create_posts' => 'do_not_allow',
           ],
-          "has_archive" => true,
           "menu_icon" => "dashicons-welcome-write-blog",
-          "public" => true,
+          "public" => false,
+          "show_ui" => true,
           "query_var" => true,
-          "supports" => [ "title", "editor", "thumbnail" ],
+          "supports" => [ "title", "editor" ],
           "rewrite" => ["slug" => "reservaties"]
         ]);
 
