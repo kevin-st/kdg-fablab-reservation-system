@@ -136,6 +136,10 @@
      */
     public static function kdg_fablab_rs_approve_reservation($reservation) {
       update_post_meta($reservation->ID, "reservation_approved", 1);
+
+      // make sure the admin is redirected to the correct page
+      wp_redirect(admin_url("edit.php?post_type=reservation&reservation-approved=1"));
+      exit;
     }
 
     /**
@@ -143,6 +147,10 @@
      */
     private static function kdg_fablab_rs_unapprove_reservation($reservation) {
       update_post_meta($reservation->ID, "reservation_approved", 0);
+
+      // make sure the admin is redirected to the correct page
+      wp_redirect(admin_url("edit.php?post_type=reservation&reservation-approved=0"));
+      exit;
     }
 
     /**
