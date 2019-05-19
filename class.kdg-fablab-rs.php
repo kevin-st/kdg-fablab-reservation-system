@@ -18,6 +18,7 @@
     private static function init_hooks() {
       self::$_initiated = TRUE;
 
+      add_action('admin_head', array("KdGFablab_RS", "kdg_fablab_rs_highlight_menu"));
       add_action("admin_init", array("KdGFablab_RS", "kdg_fablab_rs_approve"), 10);
       add_action('admin_init', array("KdGFablab_RS", "kdg_fablab_rs_redirect_to_front_end"));
       add_action('admin_menu', array("KdGFablab_RS", "kdg_fablab_rs_reservation_admin_menu"));
@@ -55,9 +56,28 @@
      * Create submenu pages for the reservation post type
      */
     public static function kdg_fablab_rs_reservation_admin_menu() {
-      add_submenu_page("edit.php?post_type=reservation", "Aanvaarde reservaties", "Aanvaarde reservaties", "manage_options", "edit.php?post_type=reservation&reservation-approved=1");
+      add_submenu_page("edit.php?post_type=reservation", "Aanvaarde reservaties", "Aanvaarde reservaties", "manage_options", "edit.php?post_type=reservation&amp;reservation-approved=1");
       add_submenu_page("edit.php?post_type=reservation", "Afgewezen reservaties", "Afgewezen reservaties", "manage_options", "edit.php?post_type=reservation&reservation-approved=0");
       add_submenu_page("edit.php?post_type=reservation", "Nieuwe reservaties", "Nieuwe reservaties", "manage_options", "edit.php?post_type=reservation&reservation-approved=-1");
+    }
+
+    /**
+     * Highlight the correct submenu item
+     */
+    public static function kdg_fablab_rs_highlight_menu() {
+      global $parent_file, $submenu_file, $post_type;
+
+      if ($post_type === "reservation") {
+        $parent_file = 'reservation';
+
+        if (isset($_GET["reservation-approved"])) {
+          $val = $_GET["reservation-approved"];
+
+          $submenu_file = "edit.php?post_type=reservation". (intval($val) === 1 ? "&amp;" : "&") ."reservation-approved=". urlencode($val);
+        } else {
+          $submenu_file = esc_url('edit.php?post_type=reservation');
+        }
+      }
     }
 
     /**
@@ -425,7 +445,7 @@
           "menu_icon" => "dashicons-welcome-write-blog",
           "public" => false,
           "show_ui" => true,
-          "show_in_mennu" => "edit.php?post_type=reservation",
+          "show_in_menu" => true,
           "query_var" => true,
           "supports" => [ "title", "editor" ],
           "rewrite" => ["slug" => "reservaties"]
