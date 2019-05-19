@@ -50,6 +50,7 @@
     }
 
     kdg_fablab_rs_update_settings();
+    kdg_fablab_rs_add_theme_caps();
 
     global $wpdb;
 
@@ -131,4 +132,20 @@
     if (!get_option("kdg_fablab_rs_time_slot")) {
       update_option("kdg_fablab_rs_time_slot", "15");
     }
+  }
+
+  /**
+   * Add capabilities to the admin role.
+   */
+  function kdg_fablab_rs_add_theme_caps() {
+    // get the admin role
+    $admins = get_role("administrator");
+
+    $admins->add_cap("edit_reservation");
+    $admins->add_cap("edit_reservations");
+    $admins->add_cap("edit_other_reservations");
+    $admins->add_cap("publish_reservations");
+    $admins->add_cap("read_reservation");
+    $admins->add_cap("read_private_reservations");
+    $admins->add_cap("delete_reservation");
   }

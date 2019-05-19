@@ -18,7 +18,9 @@
     private static function init_hooks() {
       self::$_initiated = TRUE;
 
+      add_action("admin_init", array("KdGFablab_RS", "kdg_fablab_rs_approve"), 10);
       add_action('admin_init', array("KdGFablab_RS", "kdg_fablab_rs_redirect_to_front_end"));
+      add_action('admin_menu', array("KdGFablab_RS", "kdg_fablab_rs_reservation_admin_menu"));
       add_action("manage_reservation_posts_custom_column", array("KdGFablab_RS", "kdg_fablab_rs_manage_admin_columns_data"), 10, 2);
       add_action('pre_get_posts', array("KdGFablab_RS", "kdg_fablab_rs_alter_admin_query"));
       add_action('register_form', array("KdGFablab_RS", "kdg_fablab_rs_registration_form"));
@@ -31,6 +33,31 @@
       add_filter("query_vars", array("KdGFablab_RS", "kdg_fablab_rs_query_vars"));
       add_filter('registration_errors', array("KdGFablab_RS", "kdg_fablab_rs_registration_errors"), 10, 3);
       add_filter('manage_reservation_posts_columns', array("KdGFablab_RS", "kdg_fablab_rs_manage_admin_columns"));
+      add_filter("post_row_actions", array("KdGFablab_RS", "kdg_fablab_rs_action_links"), 10, 2);
+    }
+
+    /**
+     * Define approve reservation hook
+     */
+    public static function kdg_fablab_rs_approve() {
+      if (isset($_GET["action"]) && isset($_GET["post"])) {
+        $post = get_post($_GET["post"]);
+
+        if ($_GET["action"] === "kdg_fablab_rs_approve") {
+          self::kdg_fablab_rs_approve_reservation($post);
+        } else if ($_GET["action"] === "kdg_fablab_rs_unapprove") {
+          self::kdg_fablab_rs_unapprove_reservation($post);
+        }
+      }
+    }
+
+    /**
+     * Create submenu pages for the reservation post type
+     */
+    public static function kdg_fablab_rs_reservation_admin_menu() {
+      add_submenu_page("edit.php?post_type=reservation", "Aanvaarde reservaties", "Aanvaarde reservaties", "manage_options", "edit.php?post_type=reservation&reservation-approved=1");
+      add_submenu_page("edit.php?post_type=reservation", "Afgewezen reservaties", "Afgewezen reservaties", "manage_options", "edit.php?post_type=reservation&reservation-approved=0");
+      add_submenu_page("edit.php?post_type=reservation", "Nieuwe reservaties", "Nieuwe reservaties", "manage_options", "edit.php?post_type=reservation&reservation-approved=-1");
     }
 
     /**
@@ -64,6 +91,61 @@
     }
 
     /**
+     * Add custom action links
+     */
+    public static function kdg_fablab_rs_action_links($actions, $post) {
+      if ($post->post_type == "reservation" && (!isset($_GET["post_status"]))) {
+        // store a reference to the edit and delete action links
+        $edit = isset($actions["edit"]) ? $actions["edit"] : "";
+        $trash = $actions["trash"];
+
+        // store the reference to default actions in the actions array
+        $actions = [
+          "edit" => $edit,
+          "trash" => $trash
+        ];
+
+        // fetch all metadata from the current reservation
+        $reservation_approved = get_post_meta($post->ID, "reservation_approved", true);
+
+        // build action url
+        $url = admin_url("post.php?post=". $post->ID);
+
+        // approve url
+        if (intval($reservation_approved) === -1 || intval($reservation_approved) === 0) {
+          $approve_link = wp_nonce_url(add_query_arg(["action" => "kdg_fablab_rs_approve"], $url), "approve_reservation");
+
+          // add the url to actions
+          $actions["kdg_fablab_rs_approve"] = sprintf('<a href="%1$s">%2$s</a>', esc_url($approve_link), "Aanvaarden");
+        }
+
+        // unapprove url
+        if (intval($reservation_approved) === -1 || intval($reservation_approved) === 1) {
+          $unapprove_link = wp_nonce_url(add_query_arg(["action" => "kdg_fablab_rs_unapprove"], $url), "unapprove_reservation");
+
+          // add the url to actions
+          $actions["kdg_fablab_rs_unapprove"] = sprintf('<a href="%1$s">%2$s</a>', esc_url($unapprove_link), "Afwijzen");
+        }
+      }
+
+      return $actions;
+    }
+
+    /**
+     * Approve a reservation
+     */
+    public static function kdg_fablab_rs_approve_reservation($reservation) {
+      update_post_meta($reservation->ID, "reservation_approved", 1);
+    }
+
+    /**
+     * Unapprove a reservation
+     */
+    private static function kdg_fablab_rs_unapprove_reservation($reservation) {
+      update_post_meta($reservation->ID, "reservation_approved", 0);
+    }
+
+    /**
      * Recognize custom query vars
      */
     public static function kdg_fablab_rs_query_vars($vars) {
@@ -73,6 +155,7 @@
       $vars[] = "reservation-type";
       $vars[] = "reservation-item";
       $vars[] = "reservation-date";
+      $vars[] = "reservation-approved";
 
       return $vars;
     }
@@ -87,6 +170,7 @@
       $columns["reservation-item"] = "Toestel/Workshop";
       $columns['reservation-date'] = "Datum";
       $columns["reservation-time-slots"] = "Tijdstippen";
+      $columns["reservation-approved"] = "Status";
 
       return $columns;
     }
@@ -134,6 +218,25 @@
           }
 
           break;
+
+        case "reservation-approved":
+          $val = get_post_meta($post_id, "reservation_approved", true);
+          $str_rep = "";
+
+          if (intval($val) === 0) {
+            $str_rep = "Afgewezen";
+          } else if (intval($val) === 1) {
+            $str_rep = "Aanvaard";
+          } else {
+            $str_rep = "In behandeling";
+          }
+
+          echo '<a href="';
+          echo admin_url( 'edit.php?post_type=reservation&reservation-approved=' . urlencode($val));
+          echo '">';
+          echo $str_rep;
+          echo '</a>';
+          break;
       }
     }
 
@@ -158,6 +261,11 @@
       if (isset($query->query_vars['reservation-date'])) {
         $query->set('meta_key', 'reservation_date');
         $query->set('meta_value', $query->query_vars['reservation-date'] );
+      }
+
+      if (isset($query->query_vars['reservation-approved'])) {
+        $query->set('meta_key', 'reservation_approved');
+        $query->set('meta_value', $query->query_vars['reservation-approved'] );
       }
     }
 
@@ -298,10 +406,18 @@
           ],
           'capabilities' => [
             'create_posts' => 'do_not_allow',
+            "edit_post" => "edit_reservation",
+            "edit_others_posts" => "edit_other_reservations",
+            "publish_posts" => "publish_reservations",
+            "read_post" => "read_reservation",
+            "read_private_posts" => "read_private_reservations",
+            "delete_post" => "delete_reservation"
           ],
+          "map_meta_cap" => true,
           "menu_icon" => "dashicons-welcome-write-blog",
           "public" => false,
           "show_ui" => true,
+          "show_in_mennu" => "edit.php?post_type=reservation",
           "query_var" => true,
           "supports" => [ "title", "editor" ],
           "rewrite" => ["slug" => "reservaties"]
