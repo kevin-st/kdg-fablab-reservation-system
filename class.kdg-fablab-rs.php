@@ -157,6 +157,16 @@
     public static function kdg_fablab_rs_approve_reservation($reservation) {
       update_post_meta($reservation->ID, "reservation_approved", 1);
 
+      // send e-mail to user of current reservation
+      $to = get_userdata($reservation->post_author)->user_email;
+      $subject = "Goedkeuring reservatie \"{$reservation->post_title}\"";
+
+      $message = KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_approval();
+      $message = KdGFablab_RS_Constants::kdg_fablab_rs_process_message($message, intval($reservation->post_author));
+
+      // update success
+      $success = wp_mail($to, $subject, strip_tags($message));
+
       // make sure the admin is redirected to the correct page
       wp_redirect(admin_url("edit.php?post_type=reservation&reservation-approved=1"));
       exit;
@@ -167,6 +177,16 @@
      */
     private static function kdg_fablab_rs_unapprove_reservation($reservation) {
       update_post_meta($reservation->ID, "reservation_approved", 0);
+
+      // send e-mail to user of current reservation
+      $to = get_userdata($reservation->post_author)->user_email;
+      $subject = "Afwijzing reservatie \"{$reservation->post_title}\"";
+
+      $message = KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_denial();
+      $message = KdGFablab_RS_Constants::kdg_fablab_rs_process_message($message, intval($reservation->post_author));
+
+      // update success
+      $success = wp_mail($to, $subject, strip_tags($message));
 
       // make sure the admin is redirected to the correct page
       wp_redirect(admin_url("edit.php?post_type=reservation&reservation-approved=0"));
@@ -475,10 +495,8 @@
             $to = get_option("admin_email");
             $subject = "Iemand diende een nieuwe reservatie in op " . get_bloginfo("name");
 
-            $message = get_option("kdg_fablab_rs_email_content_on_submission");
-
-            $message = str_replace("BLOGNAME", get_bloginfo("name"), $message);
-            $message = str_replace("NEW_RESERVATIONS_URL", KdGFablab_RS_Constants::get_new_reservations_url(), $message);
+            $message = KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_submission();
+            $message = KdGFablab_RS_Constants::kdg_fablab_rs_process_message($message);
 
             // update success
             $success = wp_mail($to, $subject, strip_tags($message));

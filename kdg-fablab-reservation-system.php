@@ -136,23 +136,23 @@
     }
 
     if (!get_option("kdg_fablab_rs_send_email_on_submission")) {
-      update_option("kdg_fablab_rs_send_email_on_submission", "send-email-submission");
+      update_option("kdg_fablab_rs_send_email_on_submission", "true");
     }
 
     if (!get_option("kdg_fablab_rs_email_content_on_submission")) {
-      update_option("kdg_fablab_rs_email_content_on_submission", KdGFablab_RS_Constants::get_message_on_submission());
+      update_option("kdg_fablab_rs_email_content_on_submission", KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_submission());
     }
 
     if (!get_option("kdg_fablab_rs_send_email_on_approval")) {
-      update_option("kdg_fablab_rs_send_email_on_approval", "send-email-approval");
+      update_option("kdg_fablab_rs_send_email_on_approval", "true");
     }
 
     if (!get_option("kdg_fablab_rs_email_content_on_approval")) {
-      update_option("kdg_fablab_rs_email_content_on_approval", "send-email-submission");
+      update_option("kdg_fablab_rs_email_content_on_approval", KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_approval());
     }
 
     if (!get_option("kdg_fablab_rs_email_content_on_denial")) {
-      update_option("kdg_fablab_rs_email_content_on_denial", "send-email-submission");
+      update_option("kdg_fablab_rs_email_content_on_denial", KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_denial());
     }
   }
 

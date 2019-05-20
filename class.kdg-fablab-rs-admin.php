@@ -308,12 +308,26 @@
                 minuten
               </td>
             </tr>
+          </tbody>
+        </table>
+        <h2>E-mails</h2>
+        <p>
+          Om gebruik te maken van dynamische data bij het opstellen van je e-mails, kan je volgende sleutelwoorden gebruiken:
+          <?php echo "<code>". implode("</code>, <code>", array_keys(KdGFablab_RS_Constants::kdg_fablab_rs_get_key_words())) ."</code>"; ?>.
+        </p>
+        <table class="form-table">
+          <tbody>
             <tr>
               <th scope="row">
                 Verstuur e-mail naar admin na nieuwe reservatie?
               </th>
               <td>
-                <input name="kdg_fablab_rs_send_email_on_submission" type="checkbox" value="send-email-submission" <?php echo (!empty(get_option("kdg_fablab_rs_send_email_on_submission"))) ? "checked" : "";?>/>
+                <input
+                  name="kdg_fablab_rs_send_email_on_submission"
+                  type="checkbox"
+                  value="<?php echo (get_option("kdg_fablab_rs_send_email_on_submission") === "true") ? "false" : "true"; ?>"
+                  <?php echo ((get_option("kdg_fablab_rs_send_email_on_submission") === "true")) ? "checked" : "";?>
+                />
               </td>
             </tr>
             <tr>
@@ -329,7 +343,12 @@
                 Verstuur e-mail naar gebruiker na bevestiging reservatie?
               </th>
               <td>
-                <input name="kdg_fablab_rs_send_email_on_approval" type="checkbox" value="send-email-approval" <?php echo (!empty(get_option("kdg_fablab_rs_send_email_on_approval"))) ? "checked" : "";?>/>
+                <input
+                  name="kdg_fablab_rs_send_email_on_approval"
+                  type="checkbox"
+                  value="<?php echo (get_option("kdg_fablab_rs_send_email_on_approval") === "true") ? "false" : "true"; ?>"
+                  <?php echo (get_option("kdg_fablab_rs_send_email_on_approval") === "true") ? "checked" : "";?>
+                />
               </td>
             </tr>
             <tr>
