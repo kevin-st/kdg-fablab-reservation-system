@@ -1,15 +1,15 @@
 <?php
   class KdGFablab_RS_Admin {
-    private static $initiated = FALSE;
+    private static $_initiated = FALSE;
 
     public static function init() {
-      if (!self::$initiated) {
+      if (!self::$_initiated) {
         self::init_hooks();
       }
     }
 
     private static function init_hooks() {
-      self::$initiated = TRUE;
+      self::$_initiated = TRUE;
 
       add_action("admin_init", array("KdGFablab_RS_Admin", "kdg_fablab_rs_admin_register_fablab_settings"));
       add_action("admin_menu", array("KdGFablab_RS_Admin", "kdg_fablab_rs_admin_settings_menu"));
@@ -27,6 +27,11 @@
     public static function kdg_fablab_rs_admin_register_fablab_settings() {
       register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_opening_hours");
       register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_time_slot");
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_send_email_on_submission");
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_email_content_on_submission");
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_send_email_on_approval");
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_email_content_on_approval");
+      register_setting("kdg_fablab_rs_option-group", "kdg_fablab_rs_email_content_on_denial");
     }
 
     /**
@@ -301,6 +306,46 @@
               <td>
                 <input name="kdg_fablab_rs_time_slot" type="number" min="5" max="60" step="5" value="<?php echo get_option("kdg_fablab_rs_time_slot"); ?>" />
                 minuten
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Verstuur e-mail naar admin na nieuwe reservatie?
+              </th>
+              <td>
+                <input name="kdg_fablab_rs_send_email_on_submission" type="checkbox" value="send-email-submission" <?php echo (!empty(get_option("kdg_fablab_rs_send_email_on_submission"))) ? "checked" : "";?>/>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                E-mail na nieuwe reservatie
+              </th>
+              <td>
+                <textarea class="large-text" name="kdg_fablab_rs_email_content_on_submission" rows="10" cols="50"><?php echo get_option("kdg_fablab_rs_email_content_on_submission"); ?></textarea>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Verstuur e-mail naar gebruiker na bevestiging reservatie?
+              </th>
+              <td>
+                <input name="kdg_fablab_rs_send_email_on_approval" type="checkbox" value="send-email-approval" <?php echo (!empty(get_option("kdg_fablab_rs_send_email_on_approval"))) ? "checked" : "";?>/>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                E-mail na aanvaarden reservatie
+              </th>
+              <td>
+                <textarea class="large-text" name="kdg_fablab_rs_email_content_on_approval" rows="10" cols="50"><?php echo get_option("kdg_fablab_rs_email_content_on_approval"); ?></textarea>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                E-mail na afwijzen reservatie
+              </th>
+              <td>
+                <textarea class="large-text" name="kdg_fablab_rs_email_content_on_denial" rows="10" cols="50"><?php echo get_option("kdg_fablab_rs_email_content_on_denial"); ?></textarea>
               </td>
             </tr>
           </tbody>

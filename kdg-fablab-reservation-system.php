@@ -26,9 +26,11 @@
 
   // requirements
   require_once(KDG_FABLAB_RS_PLUGIN_DIR . 'class.kdg-fablab-rs.php');
+  require_once(KDG_FABLAB_RS_PLUGIN_DIR . 'class.kdg-fablab-rs-constants.php');
 
   // execute KdGFablab_RS.init() when plugin is initialized
   add_action('init', array('KdGFablab_RS', 'init'));
+  add_action('init', array('KdGFablab_RS_Constants', 'init'));
   add_action("admin_enqueue_scripts", "kdg_fablab_rs_enqueue_scripts");
 
   // when the current user is an admin
@@ -131,6 +133,26 @@
 
     if (!get_option("kdg_fablab_rs_time_slot")) {
       update_option("kdg_fablab_rs_time_slot", "15");
+    }
+
+    if (!get_option("kdg_fablab_rs_send_email_on_submission")) {
+      update_option("kdg_fablab_rs_send_email_on_submission", "send-email-submission");
+    }
+
+    if (!get_option("kdg_fablab_rs_email_content_on_submission")) {
+      update_option("kdg_fablab_rs_email_content_on_submission", KdGFablab_RS_Constants::get_message_on_submission());
+    }
+
+    if (!get_option("kdg_fablab_rs_send_email_on_approval")) {
+      update_option("kdg_fablab_rs_send_email_on_approval", "send-email-approval");
+    }
+
+    if (!get_option("kdg_fablab_rs_email_content_on_approval")) {
+      update_option("kdg_fablab_rs_email_content_on_approval", "send-email-submission");
+    }
+
+    if (!get_option("kdg_fablab_rs_email_content_on_denial")) {
+      update_option("kdg_fablab_rs_email_content_on_denial", "send-email-submission");
     }
   }
 
