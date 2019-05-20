@@ -114,6 +114,11 @@
    */
   function kdg_fablab_rs_plugin_deactivation() {
     // code to be executed when plugin is deactivated
+    delete_option("kdg_fablab_rs_send_email_on_submission");
+    delete_option("kdg_fablab_rs_email_content_on_submission");
+    delete_option("kdg_fablab_rs_send_email_on_approval");
+    delete_option("kdg_fablab_rs_email_content_on_approval");
+    delete_option("kdg_fablab_rs_email_content_on_denial");
   }
 
   /**
