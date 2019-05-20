@@ -418,6 +418,273 @@
     }
 
     /**
+     * Handling the reservation process
+     */
+    public static function kdg_fablab_rs_reservation_process($values, $current_step) {
+      if (isset($values["submit"])) {
+        if (strtolower($values["submit"]) === "volgende") {
+          $next_step = isset($values["step"]) ? intval($values["step"]) : 0;
+          $errors = "";
+
+          if ($current_step === 0) {
+            $errors = self::kdg_fablab_rs_reservation_process_init_step($values);
+          } else if ($current_step === 1) {
+            $errors = self::kdg_fablab_rs_reservation_process_first_step($values);
+          } else if ($current_step === 2) {
+            $errors = self::kdg_fablab_rs_reservation_process_second_step($values);
+          }
+
+          if (empty($errors)) {
+            self::kdg_fablab_rs_set_reservation_step($next_step);
+            return NULL;
+          }
+
+          return $errors;
+        } else if (strtolower($values["submit"]) === "vorige") {
+          $reservation_type = self::kdg_fablab_rs_get_reservation_type();
+
+          if ($reservation_type === "workshop" && $current_step === 3) {
+            $current_step = 1;
+          } else if ($current_step > 0) {
+            $current_step -= 1;
+          }
+
+          self::kdg_fablab_rs_set_reservation_step($current_step);
+        } else if (strtolower($values["submit"]) === "indienen") {
+          $reservation_type = self::kdg_fablab_rs_get_reservation_type();
+          $reservation_item = self::kdg_fablab_rs_get_reservation_item();
+          $reservation_date = self::kdg_fablab_rs_get_reservation_date();
+          $reservation_time_slots = self::kdg_fablab_rs_get_reservation_time_slots();
+
+          $success = wp_insert_post([
+            "post_author" => get_current_user_id(),
+            "post_title" => "Reservatie voor " . $reservation_item,
+            "post_status" => "publish",
+            "post_type" => "reservation",
+            "meta_input" => [
+              "reservation_type" => $reservation_type,
+              "reservation_date" => $reservation_date,
+              "reservation_item" => $reservation_item,
+              "reservation_time_slots" => $reservation_time_slots,
+              "reservation_approved" => -1
+            ]
+          ]);
+
+          if ($success) {
+            // send e-mail to admin
+            $to = get_option("admin_email");
+            $subject = "Iemand diende een nieuwe reservatie in op " . get_bloginfo("name");
+
+            $message = get_option("kdg_fablab_rs_email_content_on_submission");
+
+            $message = str_replace("BLOGNAME", get_bloginfo("name"), $message);
+            $message = str_replace("NEW_RESERVATIONS_URL", KdGFablab_RS_Constants::get_new_reservations_url(), $message);
+
+            // update success
+            $success = wp_mail($to, $subject, strip_tags($message));
+          }
+
+          if ($success) {
+            // unset reservation session
+            $_SESSION["reservation"] = [];
+
+            // set sent variable session
+            $sent = $_SESSION['sent'] = TRUE;
+
+            if ($sent) {
+              $_SESSION['msg-type'] = "success";
+              $_SESSION['msg'] = "Je reservatie is succesvol ingediend.";
+
+              // redirect to overview user reservations
+              wp_redirect(site_url("mijn-profiel/reservaties"));
+              exit;
+            } else {
+              $_SESSION['msg-type'] = "error";
+              $_SESSION['msg'] = "Er ging iets mis tijdens het verzenden. Probeer het later nog een keer.";
+            }
+          }
+        }
+      }
+
+      return NULL;
+    }
+
+    /**
+     * Handling the init step of the reservation process
+     */
+    private static function kdg_fablab_rs_reservation_process_init_step($values) {
+      if (!empty($values["reservation-type"])) {
+        self::kdg_fablab_rs_set_reservation_type($values["reservation-type"]);
+
+        if (!empty(self::kdg_fablab_rs_get_reservation_date())) {
+          self::kdg_fablab_rs_set_reservation_date("");
+        }
+
+        if (!empty(self::kdg_fablab_rs_get_reservation_time_slots())) {
+          self::kdg_fablab_rs_set_reservation_time_slots([]);
+        }
+
+        return NULL;
+      } else {
+        return "Maak een keuze";
+      }
+    }
+
+    /**
+     * Handling the first step of the reservation process
+     */
+    private static function kdg_fablab_rs_reservation_process_first_step($values) {
+      $first_step_errors = [];
+      $reservation_type = self::kdg_fablab_rs_get_reservation_type();
+
+      if (!empty($values["reservation-item"])) {
+        self::kdg_fablab_rs_set_reservation_item($values["reservation-item"]);
+      } else {
+        $first_step_errors["item-error"] = "Kies een " . (($reservation_type === "workshop") ? $reservation_type : "toestel");
+      }
+
+      if ($reservation_type === "machine") {
+        if (!empty($values["reservation-date"])) {
+          $opening_hours = get_option("kdg_fablab_rs_opening_hours");
+          $selected_day = strtolower(date("l", strtotime($values["reservation-date"])));
+
+          if (isset($opening_hours[$selected_day]["is_closed"])) {
+            $first_step_errors["date-error"] = "Op deze dag kan niet gereserveerd worden";
+          } else {
+            $selected_date_time = new DateTime($values["reservation-date"]);
+            $now = new DateTime();
+
+            if ($selected_date_time >= $now) {
+              // set if selected date is greater than or equal to now
+              self::kdg_fablab_rs_set_reservation_date($values["reservation-date"]);
+            } else {
+              // date is past, set error
+              $first_step_errors["date-error"] = "Je kan geen datum in het verleden selecteren";
+            }
+          }
+        } else {
+          $first_step_errors["date-error"] = "Selecteer een datum";
+        }
+      } else if ($reservation_type === "workshop") {
+        $reservation_item = self::kdg_fablab_rs_get_reservation_item();
+        $workshop = get_page_by_title($reservation_item, OBJECT, "workshop");
+
+        // set the date of the found date in the workshop object (FORMAT: year-month-day)
+        $reservation_date = date("Y-m-d", strtotime(get_field("workshop_datum", $workshop->ID, false)));
+        $reservation_time_slots = [
+          get_field("start_tijd", $workshop->ID),
+          get_field("eind_tijd", $workshop->ID)
+        ];
+
+        self::kdg_fablab_rs_set_reservation_date($reservation_date);
+        self::kdg_fablab_rs_set_reservation_time_slots($reservation_time_slots);
+      }
+
+      return $first_step_errors;
+    }
+
+    /**
+     * Handling the second step of the reservation process
+     */
+    private static function kdg_fablab_rs_reservation_process_second_step($values) {
+      if (isset($values["reservation-time-slots"]) && count($values["reservation-time-slots"]) > 0) {
+        self::kdg_fablab_rs_set_reservation_time_slots($values["reservation-time-slots"]);
+      } else {
+        return "Selecteer één of meerdere tijdsloten voor uw reservatie";
+      }
+    }
+
+    /**
+     * Get reservation step
+     */
+    public static function kdg_fablab_rs_get_reservation_step() {
+      if (isset($_SESSION["reservation"]["reservation-step"])) {
+        return $_SESSION["reservation"]["reservation-step"];
+      }
+
+      return 0;
+    }
+
+    /**
+     * Set reservation step
+     */
+    private static function kdg_fablab_rs_set_reservation_step($step) {
+      $_SESSION["reservation"]["reservation-step"] = $step;
+    }
+
+    /**
+     * Get reservation type
+     */
+    public static function kdg_fablab_rs_get_reservation_type() {
+      if (isset($_SESSION["reservation"]["reservation-type"])) {
+        return $_SESSION["reservation"]["reservation-type"];
+      }
+
+      return NULL;
+    }
+
+    /**
+     * Set reservation type
+     */
+    private static function kdg_fablab_rs_set_reservation_type($type) {
+      $_SESSION["reservation"]["reservation-type"] = $type;
+    }
+
+    /**
+     * Get reservation item
+     */
+    public static function kdg_fablab_rs_get_reservation_item() {
+      if (isset($_SESSION["reservation"]["reservation-item"])) {
+        return $_SESSION["reservation"]["reservation-item"];
+      }
+
+      return NULL;
+    }
+
+    /**
+     * Set reservation item
+     */
+    private static function kdg_fablab_rs_set_reservation_item($item) {
+      $_SESSION["reservation"]["reservation-item"] = $item;
+    }
+
+    /**
+     * Get reservation date
+     */
+    public static function kdg_fablab_rs_get_reservation_date() {
+      if (isset($_SESSION["reservation"]["reservation-date"])) {
+        return $_SESSION["reservation"]["reservation-date"];
+      }
+
+      return NULL;
+    }
+
+    /**
+     * Set reservation date
+     */
+    private static function kdg_fablab_rs_set_reservation_date($date) {
+      $_SESSION["reservation"]["reservation-date"] = $date;
+    }
+
+    /**
+     * Get reservation timeslots
+     */
+    public static function kdg_fablab_rs_get_reservation_time_slots() {
+      if (isset($_SESSION["reservation"]["reservation-time-slots"])) {
+        return $_SESSION["reservation"]["reservation-time-slots"];
+      }
+
+      return [];
+    }
+
+    /**
+     * Set reservation timeslots
+     */
+    private static function kdg_fablab_rs_set_reservation_time_slots($timeslots) {
+      $_SESSION["reservation"]["reservation-time-slots"] = $timeslots;
+    }
+
+    /**
      * Enable custom post types for this plugin.
      */
     private static function kdg_fablab_rs_register_custom_post_types() {
