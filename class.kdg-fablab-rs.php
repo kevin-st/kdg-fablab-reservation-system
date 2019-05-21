@@ -157,7 +157,7 @@
     public static function kdg_fablab_rs_approve_reservation($reservation) {
       update_post_meta($reservation->ID, "reservation_approved", 1);
 
-      if (get_option("kdg_fablab_rs_send_email_on_approval") === "true") {
+      if (!empty(get_option("kdg_fablab_rs_send_email_on_approval"))) {
         // send e-mail to user of current reservation
         $to = get_userdata($reservation->post_author)->user_email;
         $subject = "Goedkeuring reservatie \"{$reservation->post_title}\"";
@@ -180,7 +180,7 @@
     private static function kdg_fablab_rs_unapprove_reservation($reservation) {
       update_post_meta($reservation->ID, "reservation_approved", 0);
 
-      if (get_option("kdg_fablab_rs_send_email_on_approval") === "true") {
+      if (!empty(get_option("kdg_fablab_rs_send_email_on_approval"))) {
         // send e-mail to user of current reservation
         $to = get_userdata($reservation->post_author)->user_email;
         $subject = "Afwijzing reservatie \"{$reservation->post_title}\"";
@@ -495,15 +495,17 @@
           ]);
 
           if ($success) {
-            // send e-mail to admin
-            $to = get_option("admin_email");
-            $subject = "Iemand diende een nieuwe reservatie in op " . get_bloginfo("name");
+            if (!empty(get_option("kdg_fablab_rs_send_email_on_submission"))) {
+              // send e-mail to admin
+              $to = get_option("admin_email");
+              $subject = "Iemand diende een nieuwe reservatie in op " . get_bloginfo("name");
 
-            $message = KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_submission();
-            $message = KdGFablab_RS_Constants::kdg_fablab_rs_process_message($message);
+              $message = KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_submission();
+              $message = KdGFablab_RS_Constants::kdg_fablab_rs_process_message($message);
 
-            // update success
-            $success = wp_mail($to, $subject, strip_tags($message));
+              // update success
+              $success = wp_mail($to, $subject, strip_tags($message));
+            }
           }
 
           if ($success) {
