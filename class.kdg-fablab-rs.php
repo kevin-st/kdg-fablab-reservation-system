@@ -157,15 +157,17 @@
     public static function kdg_fablab_rs_approve_reservation($reservation) {
       update_post_meta($reservation->ID, "reservation_approved", 1);
 
-      // send e-mail to user of current reservation
-      $to = get_userdata($reservation->post_author)->user_email;
-      $subject = "Goedkeuring reservatie \"{$reservation->post_title}\"";
+      if (get_option("kdg_fablab_rs_send_email_on_approval") === "true") {
+        // send e-mail to user of current reservation
+        $to = get_userdata($reservation->post_author)->user_email;
+        $subject = "Goedkeuring reservatie \"{$reservation->post_title}\"";
 
-      $message = KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_approval();
-      $message = KdGFablab_RS_Constants::kdg_fablab_rs_process_message($message, intval($reservation->post_author));
+        $message = KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_approval();
+        $message = KdGFablab_RS_Constants::kdg_fablab_rs_process_message($message, intval($reservation->post_author));
 
-      // update success
-      $success = wp_mail($to, $subject, strip_tags($message));
+        // update success
+        $success = wp_mail($to, $subject, strip_tags($message));
+      }
 
       // make sure the admin is redirected to the correct page
       wp_redirect(admin_url("edit.php?post_type=reservation&reservation-approved=1"));
@@ -178,15 +180,17 @@
     private static function kdg_fablab_rs_unapprove_reservation($reservation) {
       update_post_meta($reservation->ID, "reservation_approved", 0);
 
-      // send e-mail to user of current reservation
-      $to = get_userdata($reservation->post_author)->user_email;
-      $subject = "Afwijzing reservatie \"{$reservation->post_title}\"";
+      if (get_option("kdg_fablab_rs_send_email_on_approval") === "true") {
+        // send e-mail to user of current reservation
+        $to = get_userdata($reservation->post_author)->user_email;
+        $subject = "Afwijzing reservatie \"{$reservation->post_title}\"";
 
-      $message = KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_denial();
-      $message = KdGFablab_RS_Constants::kdg_fablab_rs_process_message($message, intval($reservation->post_author));
+        $message = KdGFablab_RS_Constants::kdg_fablab_rs_get_message_on_denial();
+        $message = KdGFablab_RS_Constants::kdg_fablab_rs_process_message($message, intval($reservation->post_author));
 
-      // update success
-      $success = wp_mail($to, $subject, strip_tags($message));
+        // update success
+        $success = wp_mail($to, $subject, strip_tags($message));
+      }
 
       // make sure the admin is redirected to the correct page
       wp_redirect(admin_url("edit.php?post_type=reservation&reservation-approved=0"));
