@@ -325,8 +325,8 @@
                 <input
                   name="kdg_fablab_rs_send_email_on_submission"
                   type="checkbox"
-                  value="<?php echo (get_option("kdg_fablab_rs_send_email_on_submission") === "true") ? "false" : "true"; ?>"
-                  <?php echo ((get_option("kdg_fablab_rs_send_email_on_submission") === "true")) ? "checked" : "";?>
+                  value="send-email-on-submission"
+                  <?php echo (!empty(get_option("kdg_fablab_rs_send_email_on_submission"))) ? "checked" : "";?>
                 />
               </td>
             </tr>
@@ -346,8 +346,8 @@
                 <input
                   name="kdg_fablab_rs_send_email_on_approval"
                   type="checkbox"
-                  value="<?php echo (get_option("kdg_fablab_rs_send_email_on_approval") === "true") ? "false" : "true"; ?>"
-                  <?php echo (get_option("kdg_fablab_rs_send_email_on_approval") === "true") ? "checked" : "";?>
+                  value="send_email_on_approval"
+                  <?php echo (!empty(get_option("kdg_fablab_rs_send_email_on_approval"))) ? "checked" : ""; ?>
                 />
               </td>
             </tr>

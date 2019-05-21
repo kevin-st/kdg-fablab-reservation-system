@@ -141,7 +141,7 @@
     }
 
     if (!get_option("kdg_fablab_rs_send_email_on_submission")) {
-      update_option("kdg_fablab_rs_send_email_on_submission", "true");
+      update_option("kdg_fablab_rs_send_email_on_submission", "send-email-on-submission");
     }
 
     if (!get_option("kdg_fablab_rs_email_content_on_submission")) {
@@ -149,7 +149,7 @@
     }
 
     if (!get_option("kdg_fablab_rs_send_email_on_approval")) {
-      update_option("kdg_fablab_rs_send_email_on_approval", "true");
+      update_option("kdg_fablab_rs_send_email_on_approval", "send-email-on-approval");
     }
 
     if (!get_option("kdg_fablab_rs_email_content_on_approval")) {
