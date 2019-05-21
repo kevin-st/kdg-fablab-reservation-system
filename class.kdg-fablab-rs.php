@@ -482,7 +482,7 @@
 
           $success = wp_insert_post([
             "post_author" => get_current_user_id(),
-            "post_title" => "Reservatie voor " . $reservation_item,
+            "post_title" => $reservation_item,
             "post_status" => "publish",
             "post_type" => "reservation",
             "meta_input" => [
