@@ -58,6 +58,15 @@
     }
 
     /**
+     * Reset the reservation session
+     */
+    public static function kdg_fablab_rs_reset_reservation_process() {
+      if (isset($_SESSION["reservation"])) {
+        $_SESSION["reservation"] = [];
+      }
+    }
+
+    /**
      * Get the content of the message when a reservation is submitted (defined in admin)
      */
     public static function kdg_fablab_rs_get_message_on_submission() {

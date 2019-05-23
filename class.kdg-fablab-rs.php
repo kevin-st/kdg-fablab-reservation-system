@@ -509,8 +509,7 @@
           }
 
           if ($success) {
-            // unset reservation session
-            $_SESSION["reservation"] = [];
+            KdGFablab_RS_Constants::kdg_fablab_rs_reset_reservation_process();
 
             // set sent variable session
             $sent = $_SESSION['sent'] = TRUE;
