@@ -119,6 +119,10 @@
     delete_option("kdg_fablab_rs_send_email_on_approval");
     delete_option("kdg_fablab_rs_email_content_on_approval");
     delete_option("kdg_fablab_rs_email_content_on_denial");
+    delete_option("kdg_fablab_rs_opening_hours");
+    delete_option("kdg_fablab_rs_time_slot");
+      
+      
   }
 
   /**
