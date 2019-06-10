@@ -577,8 +577,7 @@
             $selected_date_time = new DateTime($values["reservation-date"]);
             $now = new DateTime();
             $now = $now->format('Y-m-d');
-            
-            var_dump($now);
+            $now = date_create_from_format("Y-m-d", $now);
 
             if ($selected_date_time >= $now) {
               // set if selected date is greater than or equal to now
